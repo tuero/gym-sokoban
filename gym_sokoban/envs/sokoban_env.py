@@ -9,8 +9,7 @@ import numpy as np
 
 class SokobanEnv(gym.Env):
     metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array', 'raw'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array', 'raw']
+        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array']
     }
 
     def __init__(self,
@@ -52,9 +51,11 @@ class SokobanEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, action, observation_mode='rgb_array'):
+    #def step(self, action, observation_mode='rgb_array'):
+    def step(self, action):
+        observation_mode = self.render_mode
         assert action in ACTION_LOOKUP
-        assert observation_mode in ['rgb_array', 'tiny_rgb_array', 'raw']
+        assert observation_mode in ['rgb_array', 'tiny_rgb_array']
 
         self.num_env_steps += 1
 
@@ -208,10 +209,11 @@ class SokobanEnv(gym.Env):
                 second_player=second_player
             )
         except (RuntimeError, RuntimeWarning) as e:
-            print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
-            print("[SOKOBAN] Retry . . .")
+            #print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
+            #print("[SOKOBAN] Retry . . .")
             return self.reset(second_player=second_player, render_mode=render_mode)
 
+        self.render_mode = render_mode
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
@@ -234,14 +236,6 @@ class SokobanEnv(gym.Env):
                 self.viewer = rendering.SimpleImageViewer()
             self.viewer.imshow(img)
             return self.viewer.isopen
-
-        elif 'raw' in mode:
-            arr_walls = (self.room_fixed == 0).view(np.int8)
-            arr_goals = (self.room_fixed == 2).view(np.int8)
-            arr_boxes = ((self.room_state == 4) + (self.room_state == 3)).view(np.int8)
-            arr_player = (self.room_state == 5).view(np.int8)
-
-            return arr_walls, arr_goals, arr_boxes, arr_player
 
         else:
             super(SokobanEnv, self).render(mode=mode)  # just raise an exception
@@ -293,4 +287,4 @@ CHANGE_COORDINATES = {
     3: (0, 1)
 }
 
-RENDERING_MODES = ['rgb_array', 'human', 'tiny_rgb_array', 'tiny_human', 'raw']
+RENDERING_MODES = ['rgb_array', 'human', 'tiny_rgb_array', 'tiny_human']
