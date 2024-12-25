@@ -15,9 +15,10 @@ class BoxobanEnv(SokobanEnv):
 
     def __init__(self,
              max_steps=120,
-             difficulty='unfiltered', split='train'):
+             difficulty='unfiltered', split='train', problem_idx=None):
         self.difficulty = difficulty
         self.split = split
+        self.problem_idx = problem_idx
         self.verbose = False
         super(BoxobanEnv, self).__init__(self.dim_room, max_steps, self.num_boxes, None)
         
@@ -77,7 +78,10 @@ class BoxobanEnv(SokobanEnv):
         
         maps.append(current_map)
 
-        selected_map = random.choice(maps)
+        if self.problem_idx is not None:
+            selected_map = maps[self.problem_idx]
+        else:
+            selected_map = random.choice(maps)
 
         if self.verbose:
             print('Selected Level from File "{}"'.format(source_file))
