@@ -388,3 +388,15 @@ class Boxban_Env1_val(BoxobanEnv):
         kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
         kwargs['split'] = kwargs.get('split', 'valid')
         super(Boxban_Env1_val, self).__init__(**kwargs)
+
+class Boxban_Env2_test(BoxobanEnv):
+    metadata = {
+        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
+        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
+    }
+
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'hard')
+        kwargs['split'] = kwargs.get('split', 'test')
+        super(Boxban_Env2_test, self).__init__(**kwargs)

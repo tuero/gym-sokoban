@@ -2,7 +2,7 @@ from .sokoban_env import SokobanEnv
 from .render_utils import room_to_rgb
 import os
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, dirname
 import requests
 import zipfile
 from tqdm import tqdm
@@ -26,6 +26,9 @@ class BoxobanEnv(SokobanEnv):
     def reset(self, render_mode='rgb_array'):
         self.cache_path = '.sokoban_cache'
         self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty, self.split)
+        # Hard does not have a nested difficulty folder
+        if self.difficulty == "hard":
+            self.train_data_dir = dirname(self.train_data_dir)
 
         if not os.path.exists(self.cache_path):
            
@@ -66,7 +69,7 @@ class BoxobanEnv(SokobanEnv):
     def select_room(self):
         
         generated_files = [f for f in listdir(self.train_data_dir) if isfile(join(self.train_data_dir, f))]
-        source_file = join(self.train_data_dir, random.choice(generated_files))
+        source_file = join(self.train_data_dir, random.choice(generated_files) if self.difficulty != "test" else generated_files[0])
 
         maps = []
         current_map = []
